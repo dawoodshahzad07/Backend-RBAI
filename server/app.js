@@ -26,6 +26,7 @@ const contactRoutes = require("./routes/contactRoutes");
 const integrationRoutes = require("./routes/integrationRoutes");
 const recordingRoutes = require("./routes/recordingRoutes");
 const twilioRoutes = require('./routes/twilioRoutes');
+const pricingRoutes = require('./routes/pricing');
 
 // Import services
 // const twilioService = require('./services/twilioService');
@@ -67,6 +68,7 @@ app.use("/api/contacts", contactRoutes);
 app.use("/api/integrations", integrationRoutes);
 app.use("/api/recordings", recordingRoutes);
 app.use('/api', twilioRoutes);
+app.use('/api', pricingRoutes);
 
 // Example route using multiple services
 app.post('/api/voice-interaction', async (req, res) => {
