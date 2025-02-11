@@ -30,9 +30,7 @@ RealBotAI is an AI-powered platform for creating and managing AI agents, campaig
 ## Environment Variables
 
 Create a `.env` file in the root directory with the following variables:
-
-plaintext
-PORT=5000
+`PORT=5000
 MONGO_URI=mongodb://localhost:27017/realbotai
 JWT_SECRET=your_jwt_secret
 NODE_ENV=development
@@ -41,16 +39,16 @@ CLOUDINARY_API_KEY=your_cloudinary_key
 CLOUDINARY_API_SECRET=your_cloudinary_secret
 STRIPE_SECRET_KEY=your_stripe_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-ALLOWED_ORIGINS=http://localhost:3000
+ALLOWED_ORIGINS=http://localhost:3000`
 
 
 ## Installation
 
 1. Clone the repository
 2. Install dependencies:
-- npm install
+`npm install`
 3. Start the development server:
-- npm run dev
+`npm run dev`
 
 ## API Documentation
 
