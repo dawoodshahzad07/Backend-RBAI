@@ -71,3 +71,7 @@ STRIPE_SECRET_KEY=your_stripe_key
 STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
 ALLOWED_ORIGINS=http://localhost:3000
 
+<<<<<<< HEAD
+    
+=======
+>>>>>>> ebd3dd9c319bfada9595ec5af193b9d0c669dbda

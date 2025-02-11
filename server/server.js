@@ -6,6 +6,12 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const expressStatusMonitor = require('express-status-monitor');
+<<<<<<< HEAD
+const mongoose = require('mongoose');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('./swagger.json');
+=======
+>>>>>>> ebd3dd9c319bfada9595ec5af193b9d0c669dbda
 
 // Load environment variables
 dotenv.config();
@@ -23,6 +29,10 @@ const contactRoutes = require("./routes/contactRoutes");
 const integrationRoutes = require("./routes/integrationRoutes");
 const recordingRoutes = require("./routes/recordingRoutes");
 const twilioRoutes = require('./routes/twilioRoutes');
+<<<<<<< HEAD
+const dashboardRoutes = require('./routes/dashboardRoutes');
+=======
+>>>>>>> ebd3dd9c319bfada9595ec5af193b9d0c669dbda
 
 // Import services
 // const twilioService = require('./services/twilioService');
@@ -37,6 +47,10 @@ const app = express();
 
 // Apply middlewares
 app.use(helmet()); // Security headers
+<<<<<<< HEAD
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument)); 
+=======
+>>>>>>> ebd3dd9c319bfada9595ec5af193b9d0c669dbda
 app.use(cors()); // Enable CORS
 app.use(morgan("dev")); // Logger for development
 app.use(bodyParser.json()); // Parse JSON requests
@@ -50,6 +64,12 @@ app.use(expressStatusMonitor({
   }]
 }));
 
+<<<<<<< HEAD
+// Add Swagger middleware before other routes
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
+=======
+>>>>>>> ebd3dd9c319bfada9595ec5af193b9d0c669dbda
 // Connect to the database
 connectToDatabase();
 
@@ -64,6 +84,10 @@ app.use("/api/contacts", contactRoutes);
 app.use("/api/integrations", integrationRoutes);
 app.use("/api/recordings", recordingRoutes);
 app.use('/api', twilioRoutes);
+<<<<<<< HEAD
+app.use('/api/dashboard', dashboardRoutes);
+=======
+>>>>>>> ebd3dd9c319bfada9595ec5af193b9d0c669dbda
 
 // Example route using multiple services
 app.post('/api/voice-interaction', async (req, res) => {
