@@ -27,19 +27,6 @@ RealBotAI is an AI-powered platform for creating and managing AI agents, campaig
 - **Winston**: Logging
 - **Swagger**: API documentation
 
-## Environment Variables
-
-Create a `.env` file in the root directory with the following variables:
-`PORT=5000
-MONGO_URI=mongodb://localhost:27017/realbotai
-JWT_SECRET=your_jwt_secret
-NODE_ENV=development
-OPENAI_API_KEY=your_openai_key
-CLOUDINARY_API_KEY=your_cloudinary_key
-CLOUDINARY_API_SECRET=your_cloudinary_secret
-STRIPE_SECRET_KEY=your_stripe_key
-STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
-ALLOWED_ORIGINS=http://localhost:3000`
 
 
 ## Installation
@@ -67,4 +54,20 @@ server/
 ├── app.js # Express application
 ├── server.js # Server entry point
 └── README.md # This file
+
+### Environment Variables
+
+Create a `.env` file in the root directory with the following variables:
+
+```env
+PORT=5000
+MONGO_URI=mongodb://localhost:27017/realbotai
+JWT_SECRET=your_jwt_secret
+NODE_ENV=development
+OPENAI_API_KEY=your_openai_key
+CLOUDINARY_API_KEY=your_cloudinary_key
+CLOUDINARY_API_SECRET=your_cloudinary_secret
+STRIPE_SECRET_KEY=your_stripe_key
+STRIPE_WEBHOOK_SECRET=your_stripe_webhook_secret
+ALLOWED_ORIGINS=http://localhost:3000
 
