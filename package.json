@@ -5,9 +5,8 @@
   "react": "^18.0.0",
   "react-dom": "^18.0.0",
   "scripts": {
-    "start": "vercel dev",
-    "build": "next build",
-    "dev": "vercel dev",
+    "start": "node app.js",
+    "dev": "nodemon app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
