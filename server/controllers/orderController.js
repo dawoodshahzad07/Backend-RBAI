@@ -1,4 +1,3 @@
-
 const Order = require('../models/orderModel');
 
 // Get all orders
