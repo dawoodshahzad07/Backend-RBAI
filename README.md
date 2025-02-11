@@ -43,7 +43,7 @@ API documentation is available via Swagger UI. After starting the server, visit:
 http://localhost:5000/api-docs
 
 
-
+```env
 ## Project Structure
 server/
 ├── config/ # Configuration files
