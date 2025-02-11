@@ -14,4 +14,4 @@ module.exports = {
     'https://api.openai.com/v1/',
     `Bearer ${process.env.OPENAI_API_KEY}`
   )
-};
+}; 
