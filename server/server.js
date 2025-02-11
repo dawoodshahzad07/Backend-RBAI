@@ -6,6 +6,9 @@ const morgan = require("morgan");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const expressStatusMonitor = require('express-status-monitor');
+const swaggerJsDoc = require('swagger-jsdoc');
+const swaggerUi = require('swagger-ui-express');
+const swaggerDocument = require('../swagger.json'); // Path to your swagger.json
 
 // Load environment variables
 dotenv.config();
@@ -91,6 +94,29 @@ app.post('/api/voice-interaction', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// Swagger configuration
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.0',
+    info: {
+      title: 'Your API Documentation',
+      version: '1.0.0',
+      description: 'API Information',
+      contact: {
+        name: 'Developer'
+      },
+      servers: ['http://localhost:5000']
+    }
+  },
+  apis: ['./routes/*.js'] // Path to your API routes
+};
+
+const swaggerDocs = swaggerJsDoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+
+// Serve Swagger UI
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // Default route
 app.get("/", (req, res) => {
