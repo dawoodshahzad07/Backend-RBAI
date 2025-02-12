@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const { v4: uuidv4 } = require('uuid');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const User = require('../models/userModel'); // Adjust the path as needed
 
 // Mock database
 let users = [];
@@ -9,26 +10,42 @@ let plans = [
     {
         id: 'business',
         name: 'Business',
-        price: 97,
-        features: ['1 AI Voice Agent', '10,000 contacts', '400 minutes'],
+        price: 80.00,
+        annualPrice: 970,
+        features: ['1 AI Voice Agent', '400 Minutes', '10,000 Contacts'],
         trialDays: 3,
-        stripePriceId: 'price_1QpYllAIF1NdBIH7' // Replace with your actual price ID
+        stripePriceId: 'prod_RkrOuMM4bnIU6i',
+        stripeAnnualPriceId: 'price_1QpYllAIF1NdBIH8'
     },
     {
         id: 'agency',
         name: 'Agency',
-        price: 297,
-        features: ['10 AI Voice Agents', 'Unlimited contacts', '1,200 minutes'],
+        price: 228.00,
+        annualPrice: 2970,
+        features: ['10 AI Voice Agents', '1,200 Minutes', 'Unlimited Contacts'],
         trialDays: 3,
-        stripePriceId: 'price_1QpYllAIF1NdBIH7' // Replace with your actual price ID
+        stripePriceId: 'prod_RkrSynBIivMrZd',
+        stripeAnnualPriceId: 'price_1QpYllAIF1NdBIH10'
     },
     {
         id: 'agency-pro',
         name: 'Agency Pro',
         price: 497,
-        features: ['Unlimited AI Voice Agents', 'Unlimited contacts', '2,500 minutes'],
+        annualPrice: 4970,
+        features: ['Unlimited AI Voice Agents', '2,500 Minutes', 'Unlimited Contacts'],
         trialDays: 3,
-        stripePriceId: 'price_1QpYllAIF1NdBIH7' // Replace with your actual price ID
+        stripePriceId: 'price_1QpYllAIF1NdBIH11',
+        stripeAnnualPriceId: 'price_1QpYllAIF1NdBIH12'
+    },
+    {
+        id: 'agency-vip',
+        name: 'Agency VIP',
+        price: 997,
+        annualPrice: 9970,
+        features: ['Whitelabel', '6,000 Minutes', 'AI Web Agents'],
+        trialDays: 0,
+        stripePriceId: 'price_1QpYllAIF1NdBIH13',
+        stripeAnnualPriceId: 'price_1QpYllAIF1NdBIH14'
     }
 ];
 
@@ -38,7 +55,7 @@ router.get('/plans', (req, res) => {
 });
 
 // Start trial
-router.post('/start-trial', (req, res) => {
+router.post('/start-trial', async (req, res) => {
     const { planId, userInfo } = req.body;
     
     // Validate input
@@ -51,46 +68,84 @@ router.post('/start-trial', (req, res) => {
         return res.status(404).json({ error: 'Plan not found' });
     }
 
-    // Create user
-    const user = {
-        id: uuidv4(),
-        ...userInfo,
-        planId,
-        trialStart: new Date(),
-        trialEnd: new Date(Date.now() + plan.trialDays * 24 * 60 * 60 * 1000),
-        status: 'trial'
-    };
+    try {
+        // Check if user already exists
+        let user = await User.findOne({ email: userInfo.email });
+        if (user) {
+            return res.status(400).json({ error: 'User already exists' });
+        }
 
-    users.push(user);
+        // Create user in database
+        user = new User({
+            ...userInfo,
+            planId,
+            trialStart: new Date(),
+            trialEnd: new Date(Date.now() + plan.trialDays * 24 * 60 * 60 * 1000),
+            status: 'trial'
+        });
 
-    res.json({
-        success: true,
-        message: 'Trial started successfully',
-        trialEnd: user.trialEnd,
-        userId: user.id
-    });
+        await user.save();
+
+        res.json({
+            success: true,
+            message: 'Trial started successfully',
+            trialEnd: user.trialEnd,
+            userId: user._id
+        });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// Process signup and payment
-router.post('/signup', async (req, res) => {
-    const { userId, paymentMethodId } = req.body;
-    
+// Set Password
+router.post('/set-password', async (req, res) => {
+    const { userId, password } = req.body;
+
     // Validate input
-    if (!userId || !paymentMethodId) {
+    if (!userId || !password) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    const user = users.find(u => u.id === userId);
-    if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-    }
+    try {
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
 
-    const plan = plans.find(p => p.id === user.planId);
-    if (!plan) {
-        return res.status(404).json({ error: 'Plan not found' });
+        // Set password (assuming your User model hashes it automatically)
+        user.password = password;
+        await user.save();
+
+        res.json({ success: true, message: 'Password set successfully' });
+    } catch (err) {
+        console.error('Error:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Process payment after trial
+router.post('/process-payment', async (req, res) => {
+    const { userId, paymentMethodId, billingType } = req.body; // billingType: 'monthly' or 'annual'
+
+    // Validate input
+    if (!userId || !paymentMethodId || !billingType) {
+        return res.status(400).json({ error: 'Missing required fields' });
     }
 
     try {
+        // Find user
+        const user = await User.findById(userId);
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Find plan
+        const plan = plans.find(p => p.id === user.planId);
+        if (!plan) {
+            return res.status(404).json({ error: 'Plan not found' });
+        }
+
         // Create Stripe customer
         const customer = await stripe.customers.create({
             email: user.email,
@@ -102,10 +157,13 @@ router.post('/signup', async (req, res) => {
             }
         });
 
+        // Determine Price ID based on billing type
+        const priceId = billingType === 'annual' ? plan.stripeAnnualPriceId : plan.stripePriceId;
+
         // Create subscription
         const subscription = await stripe.subscriptions.create({
             customer: customer.id,
-            items: [{ price: plan.stripePriceId }],
+            items: [{ price: priceId }],
             trial_period_days: plan.trialDays,
             expand: ['latest_invoice.payment_intent']
         });
@@ -115,10 +173,13 @@ router.post('/signup', async (req, res) => {
         user.stripeSubscriptionId = subscription.id;
         user.status = 'active';
         user.paymentDate = new Date();
+        user.billingType = billingType; // Store billing type
+
+        await user.save();
 
         res.json({
             success: true,
-            message: 'Signup completed successfully',
+            message: 'Payment processed successfully',
             user,
             clientSecret: subscription.latest_invoice.payment_intent.client_secret
         });

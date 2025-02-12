@@ -18,13 +18,13 @@ const userSchema = new mongoose.Schema({
   },
   password: {
     type: String,
-    required: [true, 'Please add a password'],
+    required: function() { return this.status !== 'trial'; },
     minlength: 6,
     select: false
   },
   username: {
     type: String,
-    required: [true, 'Please add a username'],
+    required: function() { return this.status !== 'trial'; },
     unique: true,
     trim: true
   },
@@ -47,7 +47,16 @@ const userSchema = new mongoose.Schema({
     type: Number,
     default: 10000
   },
-  features: [String]
+  features: [String],
+  planId: { type: String, enum: ['business', 'agency', 'agency-pro', 'agency-vip'] },
+  trialStart: { type: Date, required: true },
+  trialEnd: { type: Date, required: true },
+  status: { type: String, enum: ['trial', 'active', 'inactive'], default: 'trial' },
+  stripeCustomerId: { type: String },
+  stripeSubscriptionId: { type: String },
+  companyName: { type: String, required: true },
+  fullName: { type: String, required: true },
+  phoneNumber: { type: String, required: true }
 });
 
 userSchema.pre('save', async function (next) {

@@ -128,13 +128,13 @@ const logout = async (req, res) => {
     }
 };
 
-console.log("JWT Secret:", process.env.JWT_SECRET);
+// console.log("JWT Secret:", process.env.JWT_SECRET);
 
 const token = jwt.sign({ test: "payload" }, process.env.JWT_SECRET, { expiresIn: '1h' });
-console.log("Generated Token:", token);
+// console.log("Generated Token:", token);
 
 const decoded = jwt.verify(token, process.env.JWT_SECRET);
-console.log("Decoded Token:", decoded);
+// console.log("Decoded Token:", decoded);
 
 module.exports = {
     register,
